@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chocolate Shop</title>
+</head>
+<body>
+
+<h1>🍫 Welcome to Abishai Chocolate Shop 🍫</h1>
+
+<h2>Available Chocolates:</h2>
+
+<ul>
+    <li th:each="choco : ${chocolates}">
+        <span th:text="${choco.name}"></span> -
+        ₹ <span th:text="${choco.price}"></span>
+    </li>
+</ul>
+
+</body>
+</html>
