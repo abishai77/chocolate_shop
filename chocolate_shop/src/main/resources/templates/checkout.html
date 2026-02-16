@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Checkout</title>
+</head>
+<body>
+
+<h2>Enter Delivery Address</h2>
+
+<form action="/confirm-order" method="post">
+    <label>Full Name:</label><br>
+    <input type="text" name="name" required><br><br>
+
+    <label>Address:</label><br>
+    <textarea name="address" required></textarea><br><br>
+
+    <label>Phone No:</label><br>
+    <input type="text" name="phone" required><br><br>
+
+    <button type="submit">Confirm Order</button>
+    <form action="/confirm-order" method="post">
+
+</body>
+</html>
