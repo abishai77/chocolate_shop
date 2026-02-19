@@ -8,12 +8,13 @@
 <h2>Your Cart</h2>
 
 <ol>
-    <li th:each="item, stat : ${cart}">
+    <ul th:each="item, stat : ${cart}">
+        <span th:text="${stat.index+1}"></span>
         <span th:text="${item.name}"></span> -
         <span th:text="${item.price}"></span>
 
-        <a th:href="@{/remove(name=${item.name})}">Remove</a>
-    </li>
+        <a th:href="@{/remove/{index}(index=${stat.index})}">Remove</a>
+    </ul>
 </ol>
 
 <br>

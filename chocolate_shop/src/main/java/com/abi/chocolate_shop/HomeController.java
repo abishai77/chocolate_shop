@@ -1,4 +1,5 @@
 package com.abi.chocolate_shop;
+import jakarta.persistence.Id;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +33,7 @@ public class HomeController{
         return "home";
     }
        @GetMapping("/add-to-cart/{id}")
-    public String addToCart(@PathVariable Long id, HttpSession session){
+    public String addToCart(@PathVariable int id, HttpSession session){
             List<Chocolate> cart =  (List<Chocolate>) session.getAttribute("cart");
             if(cart == null){
                 cart = new ArrayList<>();
@@ -48,18 +49,19 @@ public class HomeController{
             if(cart == null) {
                 cart = new ArrayList<>();
             }
-               for (Chocolate c: cart){
+               for ( Chocolate c: cart){
                    total += c.getPrice();
                }
                model.addAttribute("cart",cart);
             model.addAttribute("total",total);
             return "cart";
        }
-       @GetMapping("/remove")
-       public String removeFromCart(@RequestParam("name")String name, HttpSession session){
+       @GetMapping("/remove/{index}")
+       public String removeFromCart(@PathVariable int index, HttpSession session){
             List<Chocolate> cart =  (List<Chocolate>) session.getAttribute("cart");
-            if(cart != null){
-                cart.removeIf(item -> item.getName().equals(name));
+
+           if(cart != null && index < cart.size()){
+              cart.remove(index);
                 session.setAttribute("cart",cart);
             }
             return "redirect:/cart";
@@ -79,7 +81,7 @@ public class HomeController{
             List<Chocolate> cart =  (List<Chocolate>) session.getAttribute("cart");
             if(cart != null){
                 for(Chocolate c: cart) {
-                    Chocolate cdb = chocolateRepository.findById((long) c.getId()).orElse(null);
+                    Chocolate cdb = chocolateRepository.findById((int) c.getId()).orElse(null);
                     if(cdb != null && cdb.getQuantity()>0){
                         cdb.setQuantity(cdb.getQuantity()-1);
                         chocolateRepository.save(cdb);

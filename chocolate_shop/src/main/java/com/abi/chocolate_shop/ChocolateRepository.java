@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ChocolateRepository extends JpaRepository<Chocolate, Long > {
+public interface ChocolateRepository extends JpaRepository<Chocolate, Integer> {
     List<Chocolate> findByNameContainingIgnoreCase(String name);
 }
