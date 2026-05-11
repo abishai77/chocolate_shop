@@ -1,19 +1,106 @@
 package com.abi.chocolate_shop;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-    @Controller
-    public class HomeController{
-        private final ChocolateRepository chocolateRepository;
-        public HomeController(ChocolateRepository chocolateRepository){
+@Controller
+public class HomeController{
+    private final ChocolateRepository chocolateRepository;
+    private final OrderRepository orderRepository;
+        public HomeController(ChocolateRepository chocolateRepository,  OrderRepository orderRepository) {
             this.chocolateRepository = chocolateRepository;
+            this.orderRepository = orderRepository;
         }
-        @GetMapping("/")
-        public String home(Model model){
-            model.addAttribute("chocolates", chocolateRepository.findAll());
-            return "home";
+    @GetMapping("/")
+    public String home(@RequestParam(required = false) String keyword, Model model) {
+
+        List<Chocolate> chocolates;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            chocolates = chocolateRepository
+                    .findByNameContainingIgnoreCase(keyword);
+        } else {
+            chocolates = chocolateRepository.findAll();
         }
+
+        model.addAttribute("chocolates", chocolates);
+
+        return "home";
+    }
+       @GetMapping("/add-to-cart/{id}")
+    public String addToCart(@PathVariable int id, HttpSession session){
+            List<Chocolate> cart =  (List<Chocolate>) session.getAttribute("cart");
+            if(cart == null){
+                cart = new ArrayList<>();
+            }
+           chocolateRepository.findById(id).ifPresent(cart::add);
+            session.setAttribute("cart",cart);
+            return "redirect:/";
+       }
+       @GetMapping("/cart")
+    public String cart(HttpSession session, Model model){
+            List<Chocolate> cart =  (List<Chocolate>) session.getAttribute("cart");
+            double total = 0;
+            if(cart == null) {
+                cart = new ArrayList<>();
+            }
+               for ( Chocolate c: cart){
+                   total += c.getPrice();
+               }
+               model.addAttribute("cart",cart);
+            model.addAttribute("total",total);
+            return "cart";
+       }
+       @GetMapping("/remove/{index}")
+       public String removeFromCart(@PathVariable int index, HttpSession session){
+            List<Chocolate> cart =  (List<Chocolate>) session.getAttribute("cart");
+
+           if(cart != null && index < cart.size()){
+              cart.remove(index);
+                session.setAttribute("cart",cart);
+            }
+            return "redirect:/cart";
+       }
+       @GetMapping("/checkout")
+    public String checkout(HttpSession session){
+            List<Chocolate> cart =  (List<Chocolate>) session.getAttribute("cart");
+            if(cart == null || cart.isEmpty()){
+                return "redirect:/cart";
+            }
+            return "checkout";
+       }
+       @PostMapping("/confirm-order")
+    public String confirmOrder(@RequestParam String name,
+                               @RequestParam String address,@RequestParam String phone,
+                               HttpSession session, Model model){
+            List<Chocolate> cart =  (List<Chocolate>) session.getAttribute("cart");
+            if(cart != null){
+                for(Chocolate c: cart) {
+                    Chocolate cdb = chocolateRepository.findById((int) c.getId()).orElse(null);
+                    if(cdb != null && cdb.getQuantity()>0){
+                        cdb.setQuantity(cdb.getQuantity()-1);
+                        chocolateRepository.save(cdb);
+                    }
+                    else {
+                        model.addAttribute("error",cdb.getName()+"OUT OF STOCK");
+                    }
+                }
+            }
+            CustomerOrder customerOrder = new CustomerOrder();
+            customerOrder.setName(name);
+            customerOrder.setAddress(address);
+            customerOrder.setPhone(phone);
+
+            orderRepository.save(customerOrder);
+
+            session.removeAttribute("cart");
+            model.addAttribute("customer",name);
+            return "success";
+       }
     }
 

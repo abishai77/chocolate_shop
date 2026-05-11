@@ -6,16 +6,21 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
-@Setter
-@Getter
+
 @Entity
-public class Chocolate {
+@Getter
+@Setter
+public class CustomerOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name;
-    private Double price;
-    private int quantity;
-    public Chocolate() {
+    private String address;
+    private String phone;
+    public CustomerOrder() {
+
     }
+
+
 }

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Your Cart</title>
+    <style>
+        body{
+        background-color:yellow;
+        text-align: center;
+        color: black;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Your Cart</h2>
+
+<ol>
+    <ul th:each="item, stat : ${cart}">
+        <span th:text="${stat.index+1}"></span>
+        <span th:text="${item.name}"></span> -
+        <span th:text="${item.price}"></span>
+
+        <a th:href="@{/remove/{index}(index=${stat.index})}">Remove</a>
+    </ul>
+</ol>
+
+<br>
+<a href="/">Add To Cart</a>
+<form action="/checkout" method="get">
+<button type="submit">Buy</button>
+</form>
+<h3>Total Amount: ₹<span th:text="${total}"></span> </h3>
+
+</body>
+</html>

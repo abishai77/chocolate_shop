@@ -1,4 +1,9 @@
 package com.abi.chocolate_shop;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-public interface ChocolateRepository extends JpaRepository<Chocolate, Long> {
+
+import java.util.List;
+
+public interface ChocolateRepository extends JpaRepository<Chocolate, Integer> {
+    List<Chocolate> findByNameContainingIgnoreCase(String name);
 }

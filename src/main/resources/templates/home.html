@@ -1,18 +1,42 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <title>Chocolate Shop</title>
+    <style>
+        body{
+        background-color: violet;
+        text-align: center;
+        color: black;
+        }
+        ul{
+        list-style-position: inside;
+        padding: 0;
+        margin: 0 auto;
+        }
+        li{
+        text-align: center;
+        }
+    </style>
 </head>
 <body>
 
 <h1>🍫 Welcome to Abishai Chocolate Shop 🍫</h1>
 
 <h2>Available Chocolates:</h2>
+<form action="/" method="get">
+    <input type="text" name="keyword" placeholder="Enter Chocolate">
+    <button type="submit">Search</button>
+</form>
+<a href ="/cart">View cart</a>
+<br><br>
 
 <ul>
-    <li th:each="choco : ${chocolates}">
-        <span th:text="${choco.name}"></span> -
-        ₹ <span th:text="${choco.price}"></span>
+    <li th:each="item : ${chocolates}">
+        <span th:text="${item.name}"></span>
+        ₹ <span th:text="${item.price}"></span>
+        <a th:href="@{/add-to-cart/{id}(id=${item.id})}">
+            Add to Cart
+        </a>
     </li>
 </ul>
 
